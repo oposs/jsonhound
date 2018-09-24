@@ -1,0 +1,1259 @@
+{
+  "Cisco-IOS-XE-native:native": {
+    "version": "16.6",
+    "service": {
+      "password-encryption": [null],
+      "timestamps": {
+        "debug": {
+          "datetime": {
+            "msec": {
+            }
+          }
+        },
+        "log": {
+          "datetime": {
+            "msec": [null]
+          }
+        }
+      }
+    },
+    "hostname": "Switch1",
+    "username": [
+      {
+        "name": "cisco",
+        "privilege": 15,
+        "password": {
+          "encryption": "7",
+          "password": "05080F1C22431E58"
+        }
+      }
+    ],
+    "vrf": {
+      "definition": [
+        {
+          "name": "Mgmt-vrf",
+          "address-family": {
+            "ipv4": {
+            },
+            "ipv6": {
+            }
+          }
+        }
+      ]
+    },
+    "ip": {
+      "arp": {
+        "inspection": {
+          "vlan": "10,20,30-32,34"
+        }
+      },
+      "domain": {
+        "lookup": false
+      },
+      "dhcp": {
+        "Cisco-IOS-XE-dhcp:snooping-conf": {
+          "snooping": [null]
+        },
+        "Cisco-IOS-XE-dhcp:snooping": {
+          "information": {
+            "option-conf": false
+          },
+          "vlan": "10,20,30-32,34"
+        }
+      },
+      "forward-protocol": {
+        "protocol": "nd"
+      },
+      "ssh": {
+        "client": {
+          "algorithm": {
+            "encryption": {
+              "aes128-ctr": [null],
+              "aes192-ctr": [null],
+              "aes256-ctr": [null]
+            }
+          }
+        },
+        "server": {
+          "algorithm": {
+            "encryption": {
+              "aes128-ctr": [null],
+              "aes192-ctr": [null],
+              "aes256-ctr": [null]
+            }
+          }
+        }
+      },
+      "access-list": {
+        "Cisco-IOS-XE-acl:standard": [
+          {
+            "name": "ABC-ACL",
+            "access-list-seq-rule": [
+              {
+                "sequence": 10,
+                "permit": {
+                  "std-ace": {
+                    "ipv4-prefix": "10.101.201.10"
+                  }
+                }
+              },
+              {
+                "sequence": 20,
+                "permit": {
+                  "std-ace": {
+                    "ipv4-prefix": "10.100.201.10"
+                  }
+                }
+              },
+              {
+                "sequence": 30,
+                "permit": {
+                  "std-ace": {
+                    "ipv4-prefix": "10.103.201.10"
+                  }
+                }
+              },
+              {
+                "sequence": 40,
+                "permit": {
+                  "std-ace": {
+                    "ipv4-prefix": "10.102.201.10"
+                  }
+                }
+              },
+              {
+                "sequence": 50,
+                "deny": {
+                  "std-ace": {
+                    "any": [null],
+                    "log": [null]
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "Cisco-IOS-XE-acl:extended": [
+          {
+            "name": "CISCO-CWA-URL-REDIRECT-ACL",
+            "access-list-seq-rule": [
+              {
+                "sequence": 100,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "udp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": "domain"
+                }
+              },
+              {
+                "sequence": 101,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "tcp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": "domain"
+                }
+              },
+              {
+                "sequence": 102,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "udp",
+                  "any": [null],
+                  "src-eq": "bootps",
+                  "dst-any": [null]
+                }
+              },
+              {
+                "sequence": 103,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "udp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": "bootpc"
+                }
+              },
+              {
+                "sequence": 104,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "udp",
+                  "any": [null],
+                  "src-eq": "bootpc",
+                  "dst-any": [null]
+                }
+              },
+              {
+                "sequence": 105,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "tcp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": "www"
+                }
+              }
+            ]
+          },
+          {
+            "name": "IP-Adm-V4-Int-ACL-global",
+            "access-list-seq-rule": [
+              {
+                "sequence": 10,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "tcp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": "www"
+                }
+              },
+              {
+                "sequence": 20,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "tcp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": 443
+                }
+              }
+            ]
+          },
+          {
+            "name": "implicit_deny",
+            "access-list-seq-rule": [
+              {
+                "sequence": 10,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "ip",
+                  "any": [null],
+                  "dst-any": [null]
+                }
+              }
+            ]
+          },
+          {
+            "name": "preauth_v4",
+            "access-list-seq-rule": [
+              {
+                "sequence": 10,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "udp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": "domain"
+                }
+              },
+              {
+                "sequence": 20,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "tcp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": "domain"
+                }
+              },
+              {
+                "sequence": 30,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "udp",
+                  "any": [null],
+                  "src-eq": "bootps",
+                  "dst-any": [null]
+                }
+              },
+              {
+                "sequence": 40,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "udp",
+                  "any": [null],
+                  "dst-any": [null],
+                  "dst-eq": "bootpc"
+                }
+              },
+              {
+                "sequence": 50,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "udp",
+                  "any": [null],
+                  "src-eq": "bootpc",
+                  "dst-any": [null]
+                }
+              },
+              {
+                "sequence": 60,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "ip",
+                  "any": [null],
+                  "dst-any": [null]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "Cisco-IOS-XE-http:http": {
+        "authentication": {
+          "local": [null]
+        },
+        "server": true,
+        "secure-server": true
+      }
+    },
+    "ipv6": {
+      "access-list": {
+        "Cisco-IOS-XE-acl:named-acl": [
+          {
+            "name": "implicit_deny_v6",
+            "access-list-seq-rule": [
+              {
+                "sequence": 10,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "ipv6",
+                  "any": [null],
+                  "destination-any": [null]
+                }
+              }
+            ]
+          },
+          {
+            "name": "preauth_v6",
+            "access-list-seq-rule": [
+              {
+                "sequence": 10,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "udp",
+                  "any": [null],
+                  "destination-any": [null],
+                  "dst-eq": "domain"
+                }
+              },
+              {
+                "sequence": 20,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "tcp",
+                  "any": [null],
+                  "destination-any": [null],
+                  "dst-eq": "domain"
+                }
+              },
+              {
+                "sequence": 30,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "icmp",
+                  "any": [null],
+                  "destination-any": [null],
+                  "named-msg-type": "nd-ns"
+                }
+              },
+              {
+                "sequence": 40,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "icmp",
+                  "any": [null],
+                  "destination-any": [null],
+                  "named-msg-type": "nd-na"
+                }
+              },
+              {
+                "sequence": 50,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "icmp",
+                  "any": [null],
+                  "destination-any": [null],
+                  "named-msg-type": "router-solicitation"
+                }
+              },
+              {
+                "sequence": 60,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "icmp",
+                  "any": [null],
+                  "destination-any": [null],
+                  "named-msg-type": "router-advertisement"
+                }
+              },
+              {
+                "sequence": 70,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "icmp",
+                  "any": [null],
+                  "destination-any": [null],
+                  "named-msg-type": "redirect"
+                }
+              },
+              {
+                "sequence": 80,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "udp",
+                  "any": [null],
+                  "src-eq": 547,
+                  "destination-any": [null],
+                  "dst-eq": 546
+                }
+              },
+              {
+                "sequence": 90,
+                "ace-rule": {
+                  "action": "permit",
+                  "protocol": "udp",
+                  "any": [null],
+                  "src-eq": 546,
+                  "destination-any": [null],
+                  "dst-eq": 547
+                }
+              },
+              {
+                "sequence": 100,
+                "ace-rule": {
+                  "action": "deny",
+                  "protocol": "ipv6",
+                  "any": [null],
+                  "destination-any": [null]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "vlan": {
+      "Cisco-IOS-XE-vlan:dot1q": {
+        "tag": {
+          "native": [null]
+        }
+      },
+      "Cisco-IOS-XE-vlan:vlan-list": [
+        {
+          "id": 10,
+          "name": "DATA"
+        },
+        {
+          "id": 20,
+          "name": "VOICE"
+        },
+        {
+          "id": 30,
+          "name": "DOT1X-1"
+        },
+        {
+          "id": 31,
+          "name": "DOT1X-2"
+        },
+        {
+          "id": 32,
+          "name": "DOT1X-3"
+        },
+        {
+          "id": 33,
+          "name": "DOT1X-4"
+        },
+        {
+          "id": 34,
+          "name": "DOT1X-5"
+        },
+        {
+          "id": 201,
+          "name": "MGMT"
+        },
+        {
+          "id": 2000,
+          "name": "Unused"
+        }
+      ]
+    },
+    "policy": {
+      "Cisco-IOS-XE-policy:class-map": [
+        {
+          "name": "non-client-nrt-class",
+          "prematch": "match-any"
+        },
+        {
+          "name": "system-cpp-default",
+          "prematch": "match-any",
+          "description": "DHCP Snooping, EWLC control, EWCL data"
+        },
+        {
+          "name": "system-cpp-police-control-low-priority",
+          "prematch": "match-any",
+          "description": "General punt"
+        },
+        {
+          "name": "system-cpp-police-data",
+          "prematch": "match-any",
+          "description": "ICMP redirect, ICMP_GEN and BROADCAST"
+        },
+        {
+          "name": "system-cpp-police-dot1x-auth",
+          "prematch": "match-any",
+          "description": "DOT1X Auth"
+        },
+        {
+          "name": "system-cpp-police-forus",
+          "prematch": "match-any",
+          "description": "Forus Address resolution and Forus traffic"
+        },
+        {
+          "name": "system-cpp-police-l2-control",
+          "prematch": "match-any",
+          "description": "L2 control, FSS"
+        },
+        {
+          "name": "system-cpp-police-l2lvx-control",
+          "prematch": "match-any",
+          "description": "L2 LVX control packets"
+        },
+        {
+          "name": "system-cpp-police-multicast",
+          "prematch": "match-any",
+          "description": "Transit Traffic and MCAST Data"
+        },
+        {
+          "name": "system-cpp-police-multicast-end-station",
+          "prematch": "match-any",
+          "description": "MCAST END STATION"
+        },
+        {
+          "name": "system-cpp-police-protocol-snooping",
+          "prematch": "match-any",
+          "description": "Protocol snooping"
+        },
+        {
+          "name": "system-cpp-police-punt-webauth",
+          "prematch": "match-any",
+          "description": "Punt Webauth"
+        },
+        {
+          "name": "system-cpp-police-routing-control",
+          "prematch": "match-any",
+          "description": "Routing control"
+        },
+        {
+          "name": "system-cpp-police-sw-forward",
+          "prematch": "match-any",
+          "description": "Sw forwarding, L2 LVX data, LOGGING"
+        },
+        {
+          "name": "system-cpp-police-sys-data",
+          "prematch": "match-any",
+          "description": "Learning cache ovfl, Crypto Control, Exception, EGR Exception, NFL SAMPLED DATA, Gold Pkt, RPF Failed"
+        },
+        {
+          "name": "system-cpp-police-topology-control",
+          "prematch": "match-any",
+          "description": "Topology control"
+        }
+      ],
+      "Cisco-IOS-XE-policy:policy-map": [
+        {
+          "name": "system-cpp-policy",
+          "class": [
+            {
+              "name": "system-cpp-default",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 1000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-control-low-priority",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 200,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-data",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 600,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-dot1x-auth",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 1000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-forus",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 1000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-l2-control",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 500,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-l2lvx-control",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 1000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-multicast",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 500,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-multicast-end-station",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 2000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-protocol-snooping",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 2000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-punt-webauth",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 1000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-routing-control",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 1800,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-sw-forward",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 1000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-sys-data",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 100,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "system-cpp-police-topology-control",
+              "action-list": [
+                {
+                  "action-type": "police",
+                  "police-rate-unit": {
+                    "police": {
+                      "rate": {
+                        "units": 13000,
+                        "xps": "pps"
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "interface": {
+      "GigabitEthernet": [
+        {
+          "name": "0/0",
+          "shutdown": [null],
+          "vrf": {
+            "forwarding": "Mgmt-vrf"
+          },
+          "ip": {
+            "no-address": {
+              "address": false
+            }
+          },
+          "Cisco-IOS-XE-ethernet:negotiation": {
+            "auto": true
+          },
+          "Cisco-IOS-XE-ethernet:speed": {
+            "value-1000": [null]
+          }
+        },
+        {
+          "name": "1/0/1",
+          "description": "__SKIP__",
+          "switchport": {
+            "Cisco-IOS-XE-switch:access": {
+              "vlan": {
+                "vlan": 201
+              }
+            },
+            "Cisco-IOS-XE-switch:mode": {
+              "access": {
+              }
+            }
+          }
+        },
+        {
+          "name": "1/0/10"
+        },
+        {
+          "name": "1/0/11"
+        },
+        {
+          "name": "1/0/12"
+        },
+        {
+          "name": "1/0/13"
+        },
+        {
+          "name": "1/0/14"
+        },
+        {
+          "name": "1/0/15"
+        },
+        {
+          "name": "1/0/16"
+        },
+        {
+          "name": "1/0/17"
+        },
+        {
+          "name": "1/0/18"
+        },
+        {
+          "name": "1/0/19"
+        },
+        {
+          "name": "1/0/2",
+          "description": "Test Host",
+          "switchport": {
+            "Cisco-IOS-XE-switch:access": {
+              "vlan": {
+                "vlan": 10
+              }
+            },
+            "Cisco-IOS-XE-switch:mode": {
+              "access": {
+              }
+            },
+            "Cisco-IOS-XE-switch:port-security": {
+              "aging": {
+                "time": 1,
+                "type": "inactivity"
+              },
+              "maximum": {
+                "max-addresses": 3
+              },
+              "violation": "restrict"
+            }
+          },
+          "ip": {
+            "arp": {
+              "inspection": {
+                "limit": {
+                  "rate": 100
+                }
+              }
+            },
+            "dhcp": {
+              "Cisco-IOS-XE-dhcp:snooping": {
+                "limit": {
+                  "rate": 15
+                }
+              }
+            },
+            "verify": {
+              "source": {
+              }
+            }
+          },
+          "load-interval": 60,
+          "storm-control": {
+            "action": {
+              "trap": [null]
+            },
+            "broadcast": {
+              "level": {
+                "pps": {
+                  "rising-threshold": "1k"
+                }
+              }
+            },
+            "multicast": {
+              "level": {
+                "pps": {
+                  "rising-threshold": "2k"
+                }
+              }
+            }
+          },
+          "Cisco-IOS-XE-cdp:cdp": {
+            "enable": false
+          },
+          "Cisco-IOS-XE-snmp:snmp": {
+            "trap": {
+              "link-status": false
+            }
+          },
+          "Cisco-IOS-XE-spanning-tree:spanning-tree": {
+            "bpduguard": {
+              "enable": [null]
+            },
+            "guard": "root",
+            "portfast": {
+            }
+          }
+        },
+        {
+          "name": "1/0/20"
+        },
+        {
+          "name": "1/0/21"
+        },
+        {
+          "name": "1/0/22"
+        },
+        {
+          "name": "1/0/23"
+        },
+        {
+          "name": "1/0/24"
+        },
+        {
+          "name": "1/0/25"
+        },
+        {
+          "name": "1/0/26"
+        },
+        {
+          "name": "1/0/27"
+        },
+        {
+          "name": "1/0/28"
+        },
+        {
+          "name": "1/0/29"
+        },
+        {
+          "name": "1/0/3",
+          "description": "host2",
+          "switchport": {
+            "Cisco-IOS-XE-switch:access": {
+              "vlan": {
+                "vlan": 31
+              }
+            },
+            "Cisco-IOS-XE-switch:mode": {
+              "access": {
+              }
+            }
+          },
+          "ip": {
+            "arp": {
+              "inspection": {
+                "limit": {
+                  "rate": 100
+                }
+              }
+            },
+            "dhcp": {
+              "Cisco-IOS-XE-dhcp:snooping": {
+                "limit": {
+                  "rate": 15
+                }
+              }
+            }
+          },
+          "Cisco-IOS-XE-dot1x:dot1x": {
+            "pae": "authenticator",
+            "timeout": {
+              "quiet-period": 10
+            }
+          },
+          "Cisco-IOS-XE-sanet:authentication": {
+            "control-direction": "in",
+            "port-control": "auto",
+            "timer": {
+              "reauthenticate": {
+                "value": 240
+              }
+            }
+          }
+        },
+        {
+          "name": "1/0/30"
+        },
+        {
+          "name": "1/0/31"
+        },
+        {
+          "name": "1/0/32"
+        },
+        {
+          "name": "1/0/33"
+        },
+        {
+          "name": "1/0/34"
+        },
+        {
+          "name": "1/0/35"
+        },
+        {
+          "name": "1/0/36"
+        },
+        {
+          "name": "1/0/37"
+        },
+        {
+          "name": "1/0/38"
+        },
+        {
+          "name": "1/0/39"
+        },
+        {
+          "name": "1/0/4"
+        },
+        {
+          "name": "1/0/40"
+        },
+        {
+          "name": "1/0/41"
+        },
+        {
+          "name": "1/0/42"
+        },
+        {
+          "name": "1/0/43"
+        },
+        {
+          "name": "1/0/44"
+        },
+        {
+          "name": "1/0/45"
+        },
+        {
+          "name": "1/0/46"
+        },
+        {
+          "name": "1/0/47"
+        },
+        {
+          "name": "1/0/48"
+        },
+        {
+          "name": "1/0/5"
+        },
+        {
+          "name": "1/0/6"
+        },
+        {
+          "name": "1/0/7"
+        },
+        {
+          "name": "1/0/8"
+        },
+        {
+          "name": "1/0/9"
+        },
+        {
+          "name": "1/1/1"
+        },
+        {
+          "name": "1/1/2"
+        }
+      ],
+      "TenGigabitEthernet": [
+        {
+          "name": "1/1/3"
+        },
+        {
+          "name": "1/1/4"
+        }
+      ],
+      "Vlan": [
+        {
+          "name": 1,
+          "shutdown": [null],
+          "ip": {
+            "no-address": {
+              "address": false
+            }
+          }
+        },
+        {
+          "name": 201,
+          "ip": {
+            "address": {
+              "primary": {
+                "address": "10.100.201.1",
+                "mask": "255.255.255.0"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "control-plane": {
+      "Cisco-IOS-XE-policy:service-policy": {
+        "input": "system-cpp-policy"
+      }
+    },
+    "logging": {
+      "hostip": "synchronous"
+    },
+    "aaa": {
+      "Cisco-IOS-XE-aaa:new-model": [null],
+      "Cisco-IOS-XE-aaa:authentication": {
+        "login": [
+          {
+            "name": "default",
+            "a1": {
+              "local": [null]
+            }
+          }
+        ]
+      },
+      "Cisco-IOS-XE-aaa:authorization": {
+        "exec": [
+          {
+            "name": "default",
+            "a1": {
+              "local": [null]
+            }
+          }
+        ]
+      },
+      "Cisco-IOS-XE-aaa:session-id": "common"
+    },
+    "redundancy": {
+      "mode": "sso"
+    },
+    "spanning-tree": {
+      "Cisco-IOS-XE-spanning-tree:extend": {
+        "system-id": [null]
+      },
+      "Cisco-IOS-XE-spanning-tree:portfast": {
+        "bdpu": "bpduguard",
+        "default": [null]
+      },
+      "Cisco-IOS-XE-spanning-tree:mode": "pvst"
+    },
+    "vtp": {
+      "Cisco-IOS-XE-vtp:domain": "MyVTP",
+      "Cisco-IOS-XE-vtp:mode": {
+        "transparent": {
+        }
+      }
+    },
+    "crypto": {
+      "Cisco-IOS-XE-crypto:pki": {
+        "certificate": {
+          "chain": [
+            {
+              "name": "TP-self-signed-3472495117",
+              "certificate": [
+                {
+                  "serial": "01",
+                  "certtype": "self-signed"
+                }
+              ]
+            }
+          ]
+        },
+        "trustpoint": [
+          {
+            "id": "TP-self-signed-3472495117",
+            "enrollment": {
+              "selfsigned": [null]
+            },
+            "revocation-check": "none",
+            "rsakeypair": {
+              "key-label": "TP-self-signed-3472495117"
+            },
+            "subject-name": "cn=IOS-Self-Signed-Certificate-3472495117"
+          }
+        ]
+      }
+    },
+    "line": {
+      "aux": [
+        {
+          "first": "0",
+          "stopbits": "1"
+        }
+      ],
+      "vty": [
+        {
+          "first": 5,
+          "last": 15
+        }
+      ]
+    },
+    "Cisco-IOS-XE-diagnostics:diagnostic": {
+      "bootup": {
+        "level": "minimal"
+      }
+    },
+    "Cisco-IOS-XE-switch:switch": [
+      {
+        "number": 1,
+        "provision": "ws-c3650-48pd"
+      }
+    ]
+  }
+}
