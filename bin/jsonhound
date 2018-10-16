@@ -1,0 +1,33 @@
+#!/usr/bin/env perl6
+use JSON::Fast;
+use Terminal::ANSIColor;
+
+sub MAIN(
+        $validation  ,  #= Path to module specifying the validation to apply
+        *@json-files    #= The JSON file(s) to validate
+        ) {
+    my $failed = False;
+    race for @json-files -> $file {
+        with slurp($file) -> $json {
+            with try from-json($json) -> $parsed {
+                ok($file);
+            }
+            else {
+                error($file, "invalid JSON: $!");
+            }
+        }
+        else {
+            error($file, "file not found");
+        }
+    }
+    exit($failed ?? 1 !! 0);
+
+    sub ok($file) {
+        note "$file: " ~ colored("passed validation", "green");
+    }
+
+    sub error($file, $message) {
+        note "$file: " ~ colored($message, "red");
+        $failed = True;
+    }
+}

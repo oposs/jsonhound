@@ -1,0 +1,13 @@
+{
+    "license": "MIT",
+    "auth": "Oetiker+Partner",
+    "depends": [
+        "JSON::Fast",
+        "Terminal::ANSIColor"
+    ],
+    "name": "JSONHound",
+    "description": "Identifies anomalies in JSON data structures",
+    "test-depends": [],
+    "build-depends": [],
+    "version": "0.0.1"
+}
