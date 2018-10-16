@@ -46,7 +46,8 @@ sub MAIN(
     sub validation-error($file, @violations) {
         my $message = "$file: " ~ colored("failed validation\n", "red");
         for @violations -> $v {
-            $message ~= "  " ~ colored("$v.name()\n", "underline");
+            $message ~= "  " ~ colored("$v.name()", "underline") ~
+                    " $v.file.IO.basename():$v.line()\n";
             for $v.arguments.sort(*.key).map(|*.kv) -> $name, $json {
                 $message ~= colored("    $name:\n", "bold");
                 $message ~= to-json($json).indent(6) ~ "\n";

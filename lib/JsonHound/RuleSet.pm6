@@ -33,7 +33,9 @@ class JsonHound::RuleSet {
             for @arg-tuples -> @args {
                 unless &!validator(|@args) {
                     my %arguments = @!identifiers.map(*.^name) Z=> @args;
-                    push @violations, JSONHound::Violation.new(:$!name, :%arguments);
+                    push @violations, JSONHound::Violation.new:
+                            :$!name, :%arguments, :file(&!validator.file),
+                            :line(&!validator.line);
                 }
             }
         }
