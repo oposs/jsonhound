@@ -34,5 +34,7 @@ my @violations = $*JSON-HOUND-RULESET.validate($sample-document);
 is @violations.elems, 2, 'Correct number of violations detected';
 nok @violations.grep(* !~~ JSONHound::Violation),
         'All violations are instances of JsonHound::Violation';
+is @violations.map(*.arguments<VLanUsage>.<vlan>).sort, (15, 42),
+        'Correct elements identified as not matching';
 
 done-testing;
