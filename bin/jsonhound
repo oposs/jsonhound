@@ -4,11 +4,14 @@ use Terminal::ANSIColor;
 use JsonHound::RuleSet;
 
 sub MAIN(
-        $validations,   #= Path to module specifying the validation to apply
-        *@json-files    #= The JSON file(s) to validate
+        $validations,  #= Path to module specifying the validation to apply
+        *@json-files   #= The JSON file(s) to validate
         ) {
     my $*JSON-HOUND-RULESET = JsonHound::RuleSet.new;
-    EVALFILE $validations;
+    my $rule-file = $validations.IO;
+    CompUnit::RepositoryRegistry.use-repository:
+            CompUnit::RepositoryRegistry.repository-for-spec($rule-file.parent.absolute);
+    require "$rule-file.basename()";
 
     my $failed = False;
     race for @json-files -> $file {
