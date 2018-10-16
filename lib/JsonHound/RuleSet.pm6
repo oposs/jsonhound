@@ -27,9 +27,11 @@ class JsonHound::RuleSet {
         #| Runs the validation on the identified data items, pushing any violations
         #| on to the passed violations array.
         method add-violations(%identified, @violations) {
-            die "NYI multi-arg validator" if @!identifiers != 1;
-            for %identified{@!identifiers[0]}.list -> $arg {
-                unless &!validator($arg) {
+            my @arg-tuples = @!identifiers.elems == 1
+                    ?? %identified{@!identifiers[0]}.map({ ($_,) })
+                    !! [X] %identified{@!identifiers}.map(*.list);
+            for @arg-tuples -> @args {
+                unless &!validator(|@args) {
                     push @violations, JSONHound::Violation.new(:$!name);
                 }
             }
