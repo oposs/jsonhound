@@ -1,33 +1,54 @@
 #!/usr/bin/env perl6
 use JSON::Fast;
 use Terminal::ANSIColor;
+use JsonHound::RuleSet;
 
 sub MAIN(
-        $validation  ,  #= Path to module specifying the validation to apply
+        $validations,   #= Path to module specifying the validation to apply
         *@json-files    #= The JSON file(s) to validate
         ) {
+    my $*JSON-HOUND-RULESET = JsonHound::RuleSet.new;
+    EVALFILE $validations;
+
     my $failed = False;
     race for @json-files -> $file {
         with slurp($file) -> $json {
             with try from-json($json) -> $parsed {
-                ok($file);
+                if $*JSON-HOUND-RULESET.validate($parsed) -> @violations {
+                    validation-error($file, @violations);
+                }
+                else {
+                    ok($file);
+                }
             }
             else {
-                error($file, "invalid JSON: $!");
+                file-error($file, "invalid JSON: $!");
             }
         }
         else {
-            error($file, "file not found");
+            file-error($file, "file not found");
         }
     }
     exit($failed ?? 1 !! 0);
 
     sub ok($file) {
-        note "$file: " ~ colored("passed validation", "green");
+        say "$file: " ~ colored("passed validation", "green");
     }
 
-    sub error($file, $message) {
-        note "$file: " ~ colored($message, "red");
+    sub file-error($file, $message) {
+        say "$file: " ~ colored($message, "red");
         $failed = True;
+    }
+
+    sub validation-error($file, @violations) {
+        my $message = "$file: " ~ colored("failed validation\n", "red");
+        for @violations -> $v {
+            $message ~= "  " ~ colored("$v.name()\n", "underline");
+            for $v.arguments.sort(*.key).map(|*.kv) -> $name, $json {
+                $message ~= colored("    $name:\n", "bold");
+                $message ~= to-json($json).indent(6) ~ "\n";
+            }
+        }
+        say $message;
     }
 }
