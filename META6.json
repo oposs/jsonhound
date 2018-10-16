@@ -5,6 +5,11 @@
         "JSON::Fast",
         "Terminal::ANSIColor"
     ],
+    "provides": {
+        "JsonHound::Violation": "lib/JsonHound/Violation.pm6",
+        "JsonHound::RuleSet": "lib/JsonHound/RuleSet.pm6",
+        "JsonHound": "lib/JsonHound.pm6"
+    },
     "name": "JSONHound",
     "description": "Identifies anomalies in JSON data structures",
     "test-depends": [],
