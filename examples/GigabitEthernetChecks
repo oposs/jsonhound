@@ -11,9 +11,20 @@ subset GigabitEthernet
                  (.<description> // '') ne '__SKIP__'
         }
 
+subset Authentication
+        is json-path(q[..['Cisco-IOS-XE-sanet:authentication']]);
+
 validate 'Missing global DHCP snooping', -> ArpInspection $inspection, GigabitEthernet $ge {
     $ge<switchport><Cisco-IOS-XE-switch:access><vlan><vlan> ~~ any(ranges($inspection))
 }
 sub ranges($range-list) {
     $range-list.split(',').map({ /(\d+)['-'(\d+)]?/; $1 ?? (+$0 .. +$1) !! +$0 })
+}
+
+validate 'Missing auth port-control', -> Authentication $auth {
+    $auth<port-control>:exists && $auth<port-control> eq 'auto'
+}
+
+validate 'Wrong reauthentication value', -> Authentication $auth {
+    $auth<timer><reauthenticate><value> == 1800
 }
