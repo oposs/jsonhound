@@ -14,7 +14,7 @@ sub MAIN(
     require "$rule-file.basename()";
 
     my $failed = False;
-    race for @json-files -> $file {
+    race for @json-files.race(:1batch) -> $file {
         with slurp($file) -> $json {
             with try from-json($json) -> $parsed {
                 if $*JSON-HOUND-RULESET.validate($parsed) -> @violations {
