@@ -1,0 +1,58 @@
+#!/usr/bin/env perl6
+use JSON::Fast;
+use Terminal::ANSIColor;
+use JsonHound::RuleSet;
+
+sub MAIN(
+        $validations,  #= Path to module specifying the validation to apply
+        *@json-files   #= The JSON file(s) to validate
+        ) {
+    my $*JSON-HOUND-RULESET = JsonHound::RuleSet.new;
+    my $rule-file = $validations.IO;
+    CompUnit::RepositoryRegistry.use-repository:
+            CompUnit::RepositoryRegistry.repository-for-spec($rule-file.parent.absolute);
+    require "$rule-file.basename()";
+
+    my $failed = False;
+    race for @json-files.race(:1batch) -> $file {
+        with slurp($file) -> $json {
+            with try from-json($json) -> $parsed {
+                if $*JSON-HOUND-RULESET.validate($parsed) -> @violations {
+                    validation-error($file, @violations);
+                }
+                else {
+                    ok($file);
+                }
+            }
+            else {
+                file-error($file, "invalid JSON: $!");
+            }
+        }
+        else {
+            file-error($file, "file not found");
+        }
+    }
+    exit($failed ?? 1 !! 0);
+
+    sub ok($file) {
+        say "$file: " ~ colored("passed validation", "green");
+    }
+
+    sub file-error($file, $message) {
+        say "$file: " ~ colored($message, "red");
+        $failed = True;
+    }
+
+    sub validation-error($file, @violations) {
+        my $message = "$file: " ~ colored("failed validation\n", "red");
+        for @violations -> $v {
+            $message ~= "  " ~ colored("$v.name()", "underline") ~
+                    " $v.file.IO.basename():$v.line()\n";
+            for $v.arguments.sort(*.key).map(|*.kv) -> $name, $json {
+                $message ~= colored("    $name:\n", "bold");
+                $message ~= to-json($json).indent(6) ~ "\n";
+            }
+        }
+        say $message;
+    }
+}
