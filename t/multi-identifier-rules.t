@@ -1,5 +1,4 @@
 use Test;
-use Test;
 use JsonHound;
 use JsonHound::Violation;
 

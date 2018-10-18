@@ -55,7 +55,7 @@ class JsonHound::RuleSet {
         my $validation = Validation.new(:$name, :&validator);
         for $validation.identifiers {
             %!identifiers{$_} = True;
-            with .HOW.?json-path -> $json-path {
+            with self!find-json-path($_) -> $json-path {
                 %!json-path-cache{$json-path} //= JSON::Path.new($json-path);
             }
         }
@@ -84,11 +84,21 @@ class JsonHound::RuleSet {
 
     #| Takes a parsed JSON document and matches a given identifier type in it.
     method !match-identifier-in($type, $document --> List) {
-        with $type.HOW.?json-path -> $json-path {
+        with self!find-json-path($type) -> $json-path {
             eager %!json-path-cache{$json-path}.values($document).grep($type)
         }
         else {
             !!! "NYI non-json-path case of subset"
         }
+    }
+
+    #| Takes a subset type and finds the nearest json-path trait value, if
+    #| any.
+    method !find-json-path($type is copy) {
+        while $type.HOW ~~ Metamodel::SubsetHOW {
+            .return with $type.HOW.?json-path;
+            $type = $type.^refinee;
+        }
+        return Nil;
     }
 }
