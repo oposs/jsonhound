@@ -3,7 +3,8 @@
     "auth": "Oetiker+Partner",
     "depends": [
         "JSON::Fast",
-        "Terminal::ANSIColor"
+        "Terminal::ANSIColor",
+        "JSON::Path"
     ],
     "provides": {
         "JsonHound::Violation": "lib/JsonHound/Violation.pm6",
