@@ -4,6 +4,11 @@ perl6:
     - '2018.09'
     - latest
 
+cache:
+  directories:
+      - .rakudobrew
+      - .zef
+      
 install:
     - rakudobrew build-zef
     - zef --debug --deps-only install .
