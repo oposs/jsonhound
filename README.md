@@ -106,3 +106,14 @@ perl6 -Ilib bin/jsonhound RuleFile.pm file1.json file2.json
 
 If more than one JSON input file is specified, then they will be parsed and validated
 in parallel.
+
+## Running with Docker
+
+You can also run the tool with docker directly from the git checkout
+without installing perl6 locally.
+
+
+```
+docker-compose build
+docker-compose run jsonhound examples/GigabitEthernetChecks.pm6 t/00-Switch1-OK.json
+```
