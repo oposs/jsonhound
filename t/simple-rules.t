@@ -35,7 +35,8 @@ is @violations.grep(*.name eq 'Titlecased names').elems, 1,
 is @violations.grep(*.name eq 'Available is in stock').elems, 2,
         'Two violations of available is in stock rule';
 given @violations.first(*.name eq 'Titlecased names') {
-    is-deeply .arguments, { Product => { name => 'bar', available => False, stock => 0 } },
+    is-deeply .arguments.map({ .key => Hash.new(.value.pairs) }).hash,
+            { Product => { name => 'bar', available => False, stock => 0 } },
             'Arguments to failing rule correctly provided';
 }
 
