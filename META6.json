@@ -9,6 +9,7 @@
     "provides": {
         "JsonHound::Violation": "lib/JsonHound/Violation.pm6",
         "JsonHound::RuleSet": "lib/JsonHound/RuleSet.pm6",
+        "JsonHound::PathMixin": "lib/JsonHound/PathMixin.pm6",
         "JsonHound": "lib/JsonHound.pm6"
     },
     "name": "JSONHound",

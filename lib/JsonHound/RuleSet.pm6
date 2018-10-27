@@ -1,4 +1,5 @@
 use JSON::Path;
+use JsonHound::PathMixin;
 use JsonHound::Violation;
 
 #| A set of validation rules to apply to the document, along with logic
@@ -85,7 +86,9 @@ class JsonHound::RuleSet {
     #| Takes a parsed JSON document and matches a given identifier type in it.
     method !match-identifier-in($type, $document --> List) {
         with self!find-json-path($type) -> $json-path {
-            eager %!json-path-cache{$json-path}.values($document).grep($type)
+            eager %!json-path-cache{$json-path}.paths-and-values($document)
+                    .map(-> $path, $value { $value but JsonHound::PathMixin($path) })
+                    .grep($type)
         }
         else {
             !!! "NYI non-json-path case of subset"
