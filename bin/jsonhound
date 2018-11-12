@@ -3,6 +3,7 @@ use JSON::Fast;
 use JsonHound::Reporter::Compound;
 use JsonHound::Reporter::CLI;
 use JsonHound::Reporter::Nagios;
+use JsonHound::Reporter::Syslog;
 use JsonHound::RuleSet;
 
 sub MAIN(
@@ -50,6 +51,9 @@ sub build-reporter($reporter) {
         }
         when 'nagios' {
             JsonHound::Reporter::Nagios.new
+        }
+        when 'syslog' {
+            JsonHound::Reporter::Syslog.new
         }
         default {
             note "No such reporter '$_'";
