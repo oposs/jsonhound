@@ -1,11 +1,15 @@
 #!/usr/bin/env perl6
 use JSON::Fast;
-use Terminal::ANSIColor;
+use JsonHound::Reporter::Compound;
+use JsonHound::Reporter::CLI;
+use JsonHound::Reporter::Nagios;
+use JsonHound::Reporter::Syslog;
 use JsonHound::RuleSet;
 
 sub MAIN(
         $validations,  #= Path to module specifying the validation to apply
-        *@json-files   #= The JSON file(s) to validate
+        *@json-files,  #= The JSON file(s) to validate
+        Str :$reporter #= Which reporter(s) to use, comma-separated (nagios,cli,syslog)
         ) {
     my $*JSON-HOUND-RULESET = JsonHound::RuleSet.new;
     my $rule-file = $validations.IO;
@@ -13,47 +17,50 @@ sub MAIN(
             CompUnit::RepositoryRegistry.repository-for-spec($rule-file.parent.absolute);
     require "$rule-file.basename()";
 
-    my $failed = False;
-    race for @json-files.race(:1batch) -> $file {
+    # We process the input files in parallel, but then do reporting of those
+    # results one at a time. The `map` produces closures that are invoked with
+    # the reporter; the `for` enforces one-at-a-time behavior. This means that
+    # reporters don't need to account for concurrency.
+    my $reporter-object = build-reporter($reporter);
+    .($reporter-object) for @json-files.race(:1batch).map: -> $file {
         with slurp($file) -> $json {
             with try from-json($json) -> $parsed {
                 if $*JSON-HOUND-RULESET.validate($parsed) -> @violations {
-                    validation-error($file, @violations);
+                    *.validation-error($file, @violations);
                 }
                 else {
-                    ok($file);
+                    *.ok($file);
                 }
             }
             else {
-                file-error($file, "invalid JSON: $!");
+                *.file-error($file, "invalid JSON: $!");
             }
         }
         else {
-            file-error($file, "file not found");
+            *.file-error($file, "file not found");
+        }
+    };
+    $reporter-object.finalize;
+    exit($reporter-object.exit-code // 0);
+}
+
+sub build-reporter($reporter) {
+    my @reporters = do for ($reporter // 'cli').split(',') {
+        when 'cli' {
+            JsonHound::Reporter::CLI.new
+        }
+        when 'nagios' {
+            JsonHound::Reporter::Nagios.new
+        }
+        when 'syslog' {
+            JsonHound::Reporter::Syslog.new
+        }
+        default {
+            note "No such reporter '$_'";
+            exit 1;
         }
     }
-    exit($failed ?? 1 !! 0);
-
-    sub ok($file) {
-        say "$file: " ~ colored("passed validation", "green");
-    }
-
-    sub file-error($file, $message) {
-        say "$file: " ~ colored($message, "red");
-        $failed = True;
-    }
-
-    sub validation-error($file, @violations) {
-        my $message = "$file: " ~ colored("failed validation\n", "red");
-        for @violations -> $v {
-            $message ~= "  " ~ colored("$v.name()", "underline") ~
-                    " $v.file.IO.basename():$v.line()\n";
-            for $v.arguments.sort(*.key).map(|*.kv) -> $name, $json {
-                $message ~= colored("    $name: ", "bold");
-                $message ~= colored("$json.path()\n", "blue");
-                $message ~= to-json($json).indent(6) ~ "\n";
-            }
-        }
-        say $message;
-    }
+    return @reporters == 1
+            ?? @reporters[0]
+            !! JsonHound::Reporter::Compound.new(:@reporters);
 }

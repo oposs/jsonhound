@@ -3,11 +3,17 @@
     "auth": "Oetiker+Partner",
     "depends": [
         "JSON::Fast",
+        "Log::Syslog::Native",
         "Terminal::ANSIColor",
         "JSON::Path"
     ],
     "provides": {
+        "JsonHound::Reporter::Compound": "lib/JsonHound/Reporter/Compound.pm6",
+        "JsonHound::Reporter::Syslog": "lib/JsonHound/Reporter/Syslog.pm6",
+        "JsonHound::Reporter::CLI": "lib/JsonHound/Reporter/CLI.pm6",
+        "JsonHound::Reporter::Nagios": "lib/JsonHound/Reporter/Nagios.pm6",
         "JsonHound::Violation": "lib/JsonHound/Violation.pm6",
+        "JsonHound::Reporter": "lib/JsonHound/Reporter.pm6",
         "JsonHound::RuleSet": "lib/JsonHound/RuleSet.pm6",
         "JsonHound::PathMixin": "lib/JsonHound/PathMixin.pm6",
         "JsonHound": "lib/JsonHound.pm6"
