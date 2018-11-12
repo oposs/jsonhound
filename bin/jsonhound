@@ -9,7 +9,7 @@ use JsonHound::RuleSet;
 sub MAIN(
         $validations,  #= Path to module specifying the validation to apply
         *@json-files,  #= The JSON file(s) to validate
-        :$reporter     #= Which reporter(s) to use (comma-separated)
+        Str :$reporter #= Which reporter(s) to use, comma-separated (nagios,cli,syslog)
         ) {
     my $*JSON-HOUND-RULESET = JsonHound::RuleSet.new;
     my $rule-file = $validations.IO;
