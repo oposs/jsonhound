@@ -7,6 +7,7 @@
         "JSON::Path"
     ],
     "provides": {
+        "JsonHound::Reporter::Compound": "lib/JsonHound/Reporter/Compound.pm6",
         "JsonHound::Reporter::CLI": "lib/JsonHound/Reporter/CLI.pm6",
         "JsonHound::Reporter::Nagios": "lib/JsonHound/Reporter/Nagios.pm6",
         "JsonHound::Violation": "lib/JsonHound/Violation.pm6",
