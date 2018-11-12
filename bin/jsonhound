@@ -13,24 +13,28 @@ sub MAIN(
             CompUnit::RepositoryRegistry.repository-for-spec($rule-file.parent.absolute);
     require "$rule-file.basename()";
 
+    # We process the input files in parallel, but then do reporting of those
+    # results one at a time. The `map` produces closures that are invoked with
+    # the reporter; the `for` enforces one-at-a-time behavior. This means that
+    # reporters don't need to account for concurrency.
     my $reporter = JsonHound::Reporter::CLI.new;
-    race for @json-files.race(:1batch) -> $file {
+    .($reporter) for @json-files.race(:1batch).map: -> $file {
         with slurp($file) -> $json {
             with try from-json($json) -> $parsed {
                 if $*JSON-HOUND-RULESET.validate($parsed) -> @violations {
-                    $reporter.validation-error($file, @violations);
+                    *.validation-error($file, @violations);
                 }
                 else {
-                    $reporter.ok($file);
+                    *.ok($file);
                 }
             }
             else {
-                $reporter.file-error($file, "invalid JSON: $!");
+                *.file-error($file, "invalid JSON: $!");
             }
         }
         else {
-            $reporter.file-error($file, "file not found");
+            *.file-error($file, "file not found");
         }
-    }
+    };
     exit($reporter.exit-code // 0);
 }
