@@ -90,6 +90,44 @@ If `ArpInspection` matches 1 time and `GigabitEthernet` matches 4 times, then it
 called `1 * 4 = 4` times (the most typical use here is to pick out sections to match up
 with some global value).
 
+It is possible on report extra information by placing it into the validation rule's name.
+This is done by:
+
+1. Passing a block that takes named parameters and uses them to build up the name of the
+   rule, which will then be reported. It's neatest to do this using the `$:name` named
+   parameter placeholder syntax.
+2. In case of validation failure, providing arguments for use in that reporting by passing
+   them to the `report` function.
+
+For example:
+
+```
+validate {"Wrong reauthentication value (was $:value)"}, -> Authentication $auth {
+    my $value = $auth<timer><reauthenticate><value>;
+    if $value == 1800 {
+        True
+    }
+    else {
+        report :$value;
+        False
+    }
+}
+```
+
+However, since `report` returns `False`, simple rules like this may instead be written
+as simply:
+
+```
+validate {"Wrong reauthentication value (was $:value)"}, -> Authentication $auth {
+    my $value = $auth<timer><reauthenticate><value>;
+    $value == 1800 or report :$value
+}
+```
+
+It is allowed to have multiple such parameters, which may be provided with a single
+call to `report` or multiple calls to `report` over time. Do as is most comfortable
+for the rule being implemented.
+
 ## The command line interface
 
 Once installed, run with:
@@ -106,6 +144,34 @@ perl6 -Ilib bin/jsonhound RuleFile.pm file1.json file2.json
 
 If more than one JSON input file is specified, then they will be parsed and validated
 in parallel.
+
+The default is to send a report to STDERR and to exit with 0 if all validation rule
+passed, or 1 if there is a validation rule failure. However, this can be controlled
+by passing the `--reporter=...` command line option. Valid options are:
+
+* `cli` - the default human-friendly output to STDERR, with exit code 0 or 1 as
+  appropriate
+* `nagios` - Nagios plugin output and exit code
+* `syslog` - Report any validation rule failures to syslog as warnings; has no
+  impact on exit code
+
+It is allowed to combine these by listing them comma-separated. However, note that
+**the first reporter that provides an exit code will be the one that gets to decide
+the exit code**. Thus this:
+
+```
+perl6 -Ilib bin/jsonhound --reporter=nagios,cli,syslog RuleFile.pm file1.json
+```
+
+Is probably correct (the `nagios` reporter controls the exit code), while:
+
+```
+perl6 -Ilib bin/jsonhound --reporter=cli,nagios,syslog RuleFile.pm file1.json
+```
+
+Is probably not what's wanted (however, in this case one would probably also get
+away with it, in so far as `0` and `1` are quite sensible exit codes for a Nagios
+plugin anyway).
 
 ## Running with Docker
 

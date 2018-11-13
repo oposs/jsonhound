@@ -8,7 +8,7 @@ use JsonHound::Violation;
 class JsonHound::RuleSet {
     #| A single validation.
     my class Validation {
-        has $.name is required;
+        has &.name is required;
         has &.validator is required;
         has @.identifiers;
 
@@ -19,7 +19,8 @@ class JsonHound::RuleSet {
                     push @!identifiers, $constraint;
                 }
                 else {
-                    die "Validation rule '$!name' parameter '$param.name()' must " ~
+                    my $name = quietly self!generate-name({});
+                    die "Validation rule '$name' parameter '$param.name()' must " ~
                             "have an identifier type specified as a Perl 6 subset type";
                 }
             }
@@ -32,13 +33,33 @@ class JsonHound::RuleSet {
                     ?? %identified{@!identifiers[0]}.map({ ($_,) })
                     !! [X] %identified{@!identifiers}.map(*.list);
             for @arg-tuples -> @args {
+                my %*JSON-HOUND-REPORTED;
                 unless &!validator(|@args) {
+                    my $name = self!generate-name(%*JSON-HOUND-REPORTED);
                     my %arguments = @!identifiers.map(*.^name) Z=> @args;
                     push @violations, JSONHound::Violation.new:
-                            :$!name, :%arguments, :file(&!validator.file),
+                            :$name, :%arguments, :file(&!validator.file),
                             :line(&!validator.line);
                 }
             }
+        }
+
+        method !generate-name(%reported) {
+            # Detect and warn about any mismatch, and then report.
+            my @required = &!name.signature.params.map(|*.named_names);
+            my @got = keys %reported;
+            if @required (-) @got -> %missing {
+                self!warn-name("missing %missing.keys().join(', ')");
+            }
+            if @got (-) @required -> %unwanted {
+                self!warn-name("unexpected %unwanted.keys().join(', ')");
+            }
+            &!name(|%( @required Z=> %reported{@required}.map({ $_ // '<MISSING>' }) ))
+        }
+
+        method !warn-name($error --> Nil) {
+            warn "Encountered $error when generating name for validation rule at " ~
+                    "&!validator.file():&!validator.line()"
         }
     }
 
@@ -51,9 +72,15 @@ class JsonHound::RuleSet {
     #| Cache of compiled JSON::Path objects.
     has %!json-path-cache;
 
-    #| Adds a validator to the rule set.
-    method add-validation(Str $name, &validator --> Nil) {
-        my $validation = Validation.new(:$name, :&validator);
+    #| Adds a validator to the rule set with a literal name.
+    multi method add-validation(Str $name, &validator --> Nil) {
+        self.add-validation(-> { $name }, &validator);
+    }
+
+    #| Adds a validator to the rule set with a name to be filled with reported
+    #| data.
+    multi method add-validation(&name, &validator --> Nil) {
+        my $validation = Validation.new(:&name, :&validator);
         for $validation.identifiers {
             %!identifiers{$_} = True;
             with self!find-json-path($_) -> $json-path {

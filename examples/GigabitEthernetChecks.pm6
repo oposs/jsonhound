@@ -45,8 +45,9 @@ validate 'Missing auth port-control', -> Authentication $auth {
     $auth<port-control>:exists && $auth<port-control> eq 'auto'
 }
 
-validate 'Wrong reauthentication value', -> Authentication $auth {
-    $auth<timer><reauthenticate><value> == 1800
+validate {"Wrong reauthentication value (was $:value)"}, -> Authentication $auth {
+    my $value = $auth<timer><reauthenticate><value>;
+    $value == 1800 or report :$value
 }
 
 validate 'dot1x-not-set', -> VLan31 $ge {
