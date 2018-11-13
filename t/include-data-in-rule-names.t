@@ -16,22 +16,10 @@ my $sample-document = {
 my subset Day is json-path('$.days[*]');
 my $*JSON-HOUND-RULESET = JsonHound::RuleSet.new;
 validate {"Maximum daily distance is 20, but got $:distance"}, -> Day $day {
-    if $day<distance> > 20 {
-        report distance => $day<distance>;
-        False
-    }
-    else {
-        True
-    }
+    $day<distance> <= 20 or report distance => $day<distance>
 }
 validate {"Must have a team of 2 or more (have $:who)"}, -> Day $day {
-    if $day<team>.elems < 2 {
-        report who => $day<team>[0] // 'nobody';
-        False
-    }
-    else {
-        True
-    }
+    $day<team>.elems >= 2 or report who => $day<team>[0] // 'nobody'
 }
 validate {"May forget $:something and not crash!"}, -> Day $day {
     report bogus => 'value';

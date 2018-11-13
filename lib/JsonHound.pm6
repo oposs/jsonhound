@@ -26,7 +26,9 @@ sub validate($name where Str | Block, &validator --> Nil) is export {
     }
 }
 
-#| Reports data to be included in the validation rule description.
-sub report(*%values --> Nil) is export {
+#| Reports data to be included in the validation rule description. Returns
+#| False to ease writing validation rules.
+sub report(*%values) is export {
     %*JSON-HOUND-REPORTED ,= %values;
+    return False;
 }
