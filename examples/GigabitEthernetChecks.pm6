@@ -35,7 +35,9 @@ validate 'Port detection failed', -> GigabitEthernet $ge {
 }
 
 validate 'Missing global DHCP snooping', -> ArpInspection $inspection, GigabitEthernet $ge {
-    $ge<switchport><Cisco-IOS-XE-switch:access><vlan><vlan> ~~ any(ranges($inspection))
+    my $vlan = $ge<switchport><Cisco-IOS-XE-switch:access><vlan><vlan>;
+    debug "VLan is $vlan";
+    $vlan ~~ any(ranges($inspection))
 }
 sub ranges($range-list) {
     $range-list.split(',').map({ /(\d+)['-'(\d+)]?/; $1 ?? (+$0 .. +$1) !! +$0 })
@@ -47,7 +49,9 @@ validate 'Missing auth port-control', -> Authentication $auth {
 
 validate {"Wrong reauthentication value (was $:value)"}, -> Authentication $auth {
     my $value = $auth<timer><reauthenticate><value>;
-    $value == 1800 or report :$value
+    debug "Reauthenticate value is $value";
+    report :$value;
+    $value == 1800
 }
 
 validate 'dot1x-not-set', -> VLan31 $ge {
