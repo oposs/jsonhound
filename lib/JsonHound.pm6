@@ -32,3 +32,10 @@ sub report(*%values) is export {
     %*JSON-HOUND-REPORTED ,= %values;
     return False;
 }
+
+#| Reports a debug message.
+sub debug(Str() $message --> Nil) is export {
+    with $*JSON-HOUND-DEBUG -> @messages {
+        push @messages, $message;
+    }
+}
