@@ -173,6 +173,24 @@ Is probably not what's wanted (however, in this case one would probably also get
 away with it, in so far as `0` and `1` are quite sensible exit codes for a Nagios
 plugin anyway).
 
+## Debug messages
+
+To produce a debug message in a validation rule, call `debug` and pass the
+message (whatever is passed will be coerced to a string, if it is not one
+already).
+
+```
+validate 'Missing global DHCP snooping', -> ArpInspection $inspection, GigabitEthernet $ge {
+    my $vlan = $ge<switchport><Cisco-IOS-XE-switch:access><vlan><vlan>;
+    debug "VLan is $vlan";
+    $vlan ~~ any(ranges($inspection))
+}
+```
+
+By default, these are not reported. However, they can be reported by the
+`cli` reporter by passing `--debug=failed` (only report debug output from
+failed validation rules) or `--debug=all` (report all debug output).
+
 ## Running with Docker
 
 You can also run the tool with docker directly from the git checkout
