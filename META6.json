@@ -16,6 +16,7 @@
         "JsonHound::Reporter": "lib/JsonHound/Reporter.pm6",
         "JsonHound::RuleSet": "lib/JsonHound/RuleSet.pm6",
         "JsonHound::PathMixin": "lib/JsonHound/PathMixin.pm6",
+        "JsonHound::ValidationResult": "lib/JsonHound/ValidationResult.pm6",
         "JsonHound": "lib/JsonHound.pm6"
     },
     "name": "JSONHound",

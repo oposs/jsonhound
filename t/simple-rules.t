@@ -1,5 +1,6 @@
 use Test;
 use JsonHound;
+use JsonHound::ValidationResult;
 use JsonHound::Violation;
 
 # A document to test against.
@@ -26,7 +27,8 @@ validate 'Available is in stock', -> AvailableProduct $product {
 }
 
 # Check the violations are as expected.
-my @violations = $*JSON-HOUND-RULESET.validate($sample-document);
+my $result = $*JSON-HOUND-RULESET.validate($sample-document);
+my @violations = $result.violations;
 is @violations.elems, 3, 'Got the expected number of violations';
 nok @violations.grep(* !~~ JSONHound::Violation),
         'All violations are instances of JsonHound::Violation';

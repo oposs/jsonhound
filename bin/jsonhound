@@ -25,7 +25,8 @@ sub MAIN(
     .($reporter-object) for @json-files.race(:1batch).map: -> $file {
         with slurp($file) -> $json {
             with try from-json($json) -> $parsed {
-                if $*JSON-HOUND-RULESET.validate($parsed) -> @violations {
+                my $result = $*JSON-HOUND-RULESET.validate($parsed);
+                if $result.violations -> @violations {
                     *.validation-error($file, @violations);
                 }
                 else {

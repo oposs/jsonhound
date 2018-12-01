@@ -22,7 +22,7 @@ validate 'Problem on known vlan', -> KnownVLan $port {
     not $port<problem>:exists
 }
 
-my @violations = $*JSON-HOUND-RULESET.validate($sample-document);
+my @violations = $*JSON-HOUND-RULESET.validate($sample-document).violations;
 is @violations.elems, 1, 'Only one violation found';
 given @violations[0] {
     isa-ok $_, JSONHound::Violation, 'Got a violation object';

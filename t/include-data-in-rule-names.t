@@ -34,7 +34,7 @@ CONTROL {
         .resume;
     }
 }
-my @violations = $*JSON-HOUND-RULESET.validate($sample-document);
+my @violations = $*JSON-HOUND-RULESET.validate($sample-document).violations;
 is @violations.elems, 3, 'Got the expected number of violations';
 nok @violations.grep(* !~~ JSONHound::Violation),
         'All violations are instances of JsonHound::Violation';

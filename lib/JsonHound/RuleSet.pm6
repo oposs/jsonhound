@@ -1,5 +1,6 @@
 use JSON::Path;
 use JsonHound::PathMixin;
+use JsonHound::ValidationResult;
 use JsonHound::Violation;
 
 #| A set of validation rules to apply to the document, along with logic
@@ -90,14 +91,14 @@ class JsonHound::RuleSet {
         @!validations.push($validation);
     }
 
-    #| Runs the validations, and returns a list of violations.
-    method validate($document --> Array) {
+    #| Runs the validations, and returns a validation result.
+    method validate($document --> JsonHound::ValidationResult) {
         my %identified := self!match-all-identifiers-in($document);
         my @violations;
         for @!validations -> $rule {
             $rule.add-violations(%identified, @violations)
         }
-        @violations
+        return JsonHound::ValidationResult.new(:@violations);
     }
 
     #| Takes a parsed JSON document and identifies all of the places that the given

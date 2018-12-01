@@ -22,7 +22,7 @@ validate 'Path with index 1 not present', -> Product $product {
 }
 
 # Check the violations are as expected.
-my @violations = $*JSON-HOUND-RULESET.validate($sample-document);
+my @violations = $*JSON-HOUND-RULESET.validate($sample-document).violations;
 is @violations.elems, 1, 'Got the expected number of violations';
 given @violations[0] {
     isa-ok $_, JSONHound::Violation, 'Violation based on checking path worked';
