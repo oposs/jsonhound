@@ -1,5 +1,6 @@
 #!/usr/bin/env perl6
 use JSON::Fast;
+use JsonHound::DebugMode;
 use JsonHound::Reporter::Compound;
 use JsonHound::Reporter::CLI;
 use JsonHound::Reporter::Nagios;
@@ -7,15 +8,17 @@ use JsonHound::Reporter::Syslog;
 use JsonHound::RuleSet;
 
 sub MAIN(
-        $validations,  #= Path to module specifying the validation to apply
-        *@json-files,  #= The JSON file(s) to validate
-        Str :$reporter #= Which reporter(s) to use, comma-separated (nagios,cli,syslog)
+        $validations,   #= Path to module specifying the validation to apply
+        *@json-files,   #= The JSON file(s) to validate
+        Str :$reporter, #= Which reporter(s) to use, comma-separated (nagios,cli,syslog)
+        Str :$debug     #= What debug messages to produce (none, failed, all)
         ) {
     my $*JSON-HOUND-RULESET = JsonHound::RuleSet.new;
     my $rule-file = $validations.IO;
     CompUnit::RepositoryRegistry.use-repository:
             CompUnit::RepositoryRegistry.repository-for-spec($rule-file.parent.absolute);
     require "$rule-file.basename()";
+    my $debug-mode = debug-mode($debug);
 
     # We process the input files in parallel, but then do reporting of those
     # results one at a time. The `map` produces closures that are invoked with
@@ -25,12 +28,13 @@ sub MAIN(
     .($reporter-object) for @json-files.race(:1batch).map: -> $file {
         with slurp($file) -> $json {
             with try from-json($json) -> $parsed {
-                my $result = $*JSON-HOUND-RULESET.validate($parsed);
+                my $result = $*JSON-HOUND-RULESET.validate($parsed, :debug($debug-mode));
+                my @debug-messages = $result.debug-messages;
                 if $result.violations -> @violations {
-                    *.validation-error($file, @violations);
+                    *.validation-error($file, @violations, :@debug-messages);
                 }
                 else {
-                    *.ok($file);
+                    *.ok($file, :@debug-messages);
                 }
             }
             else {
@@ -43,6 +47,24 @@ sub MAIN(
     };
     $reporter-object.finalize;
     exit($reporter-object.exit-code // 0);
+}
+
+sub debug-mode($debug) {
+    given $debug || 'none' {
+        when 'none' {
+            JsonHound::DebugMode::None
+        }
+        when 'failed' {
+            JsonHound::DebugMode::Failed
+        }
+        when 'all' {
+            JsonHound::DebugMode::All
+        }
+        default {
+            note "Invalid debug mode '$_'";
+            exit 1;
+        }
+    }
 }
 
 sub build-reporter($reporter) {

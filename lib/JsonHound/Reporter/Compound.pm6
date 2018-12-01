@@ -5,16 +5,16 @@ use JsonHound::Reporter;
 class JsonHound::Reporter::Compound does JsonHound::Reporter {
     has JsonHound::Reporter @.reporters;
 
-    method ok(Str $file --> Nil) {
-        .ok($file) for @!reporters;
+    method ok(Str $file, :@debug-messages --> Nil) {
+        .ok($file, :@debug-messages) for @!reporters;
     }
 
     method file-error(Str $file, Str $problem --> Nil) {
         .file-error($file, $problem) for @!reporters;
     }
 
-    method validation-error(Str $file, @violations --> Nil) {
-        .validation-error($file, @violations) for @!reporters;
+    method validation-error(Str $file, @violations, :@debug-messages --> Nil) {
+        .validation-error($file, @violations, :@debug-messages) for @!reporters;
     }
 
     method finalize(--> Nil) {
