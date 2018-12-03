@@ -29,7 +29,7 @@ sub ranges($range-list) {
 }
 
 # Check the violations are as expected.
-my @violations = $*JSON-HOUND-RULESET.validate($sample-document);
+my @violations = $*JSON-HOUND-RULESET.validate($sample-document).violations;
 is @violations.elems, 2, 'Correct number of violations detected';
 nok @violations.grep(* !~~ JSONHound::Violation),
         'All violations are instances of JsonHound::Violation';
