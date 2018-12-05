@@ -1,3 +1,4 @@
+use Either;
 use JSON::Path;
 use JsonHound::DebugMode;
 use JsonHound::PathMixin;
@@ -12,21 +13,7 @@ class JsonHound::RuleSet {
     my class Validation {
         has &.name is required;
         has &.validator is required;
-        has @.identifiers;
-
-        submethod TWEAK() {
-            for &!validator.signature.params -> Parameter $param {
-                my $constraint = $param.constraint_list[0];
-                if $constraint.HOW ~~ Metamodel::SubsetHOW {
-                    push @!identifiers, $constraint;
-                }
-                else {
-                    my $name = quietly self!generate-name({});
-                    die "Validation rule '$name' parameter '$param.name()' must " ~
-                            "have an identifier type specified as a Perl 6 subset type";
-                }
-            }
-        }
+        has @.identifiers is required;
 
         #| Runs the validation on the identified data items, pushing any violations
         #| on to the passed violations array.
@@ -41,7 +28,7 @@ class JsonHound::RuleSet {
                 my $success = &!validator(|@args);
                 my $need-debug = $debug == All || $debug == Failed && !$success;
                 if $need-debug || !$success {
-                    my $name = self!generate-name(%*JSON-HOUND-REPORTED);
+                    my $name = generate-name(&!name, &!validator, %*JSON-HOUND-REPORTED);
                     my $line = &!validator.line;
                     my $file = &!validator.file;
                     unless $success {
@@ -57,24 +44,6 @@ class JsonHound::RuleSet {
                     }
                 }
             }
-        }
-
-        method !generate-name(%reported) {
-            # Detect and warn about any mismatch, and then report.
-            my @required = &!name.signature.params.map(|*.named_names);
-            my @got = keys %reported;
-            if @required (-) @got -> %missing {
-                self!warn-name("missing %missing.keys().join(', ')");
-            }
-            if @got (-) @required -> %unwanted {
-                self!warn-name("unexpected %unwanted.keys().join(', ')");
-            }
-            &!name(|%( @required Z=> %reported{@required}.map({ $_ // '<MISSING>' }) ))
-        }
-
-        method !warn-name($error --> Nil) {
-            warn "Encountered $error when generating name for validation rule at " ~
-                    "&!validator.file():&!validator.line()"
         }
     }
 
@@ -95,14 +64,63 @@ class JsonHound::RuleSet {
     #| Adds a validator to the rule set with a name to be filled with reported
     #| data.
     multi method add-validation(&name, &validator --> Nil) {
-        my $validation = Validation.new(:&name, :&validator);
-        for $validation.identifiers {
-            %!identifiers{$_} = True;
-            with self!find-json-path($_) -> $json-path {
-                %!json-path-cache{$json-path} //= JSON::Path.new($json-path);
+        for self!extract-identifier-lists(&name, &validator) -> @identifiers {
+            my $validation = Validation.new(:&name, :&validator, :@identifiers);
+            for $validation.identifiers {
+                %!identifiers{$_} = True;
+                with self!find-json-path($_) -> $json-path {
+                    %!json-path-cache{$json-path} //= JSON::Path.new($json-path);
+                }
+            }
+            @!validations.push($validation);
+        }
+    }
+
+    method !extract-identifier-lists(&name, &validator) {
+        my @identifiers-combinations;
+        for &validator.signature.params -> Parameter $param {
+            my $constraint = $param.constraint_list[0];
+            my @possibles;
+            collect-possibles(&name, &validator, $constraint, @possibles, $param);
+            push @identifiers-combinations, @possibles;
+        }
+        return @identifiers-combinations.elems == 1
+                ?? @identifiers-combinations[0].map({ [$_] })
+                !! [X](@identifiers-combinations);
+    }
+
+    sub collect-possibles(&name, &validator, $constraint, @possibles, $param) {
+        if $constraint.isa(Either) {
+            for $constraint.either-types {
+                collect-possibles(&name, &validator, $_, @possibles, $param);
             }
         }
-        @!validations.push($validation);
+        elsif $constraint.HOW ~~ Metamodel::SubsetHOW {
+            push @possibles, $constraint;
+        }
+        else {
+            my $name = quietly generate-name(&name, &validator, {});
+            die "Validation rule '$name' parameter '$param.name()' must " ~
+                    "have an identifier type specified as a Perl 6 subset type";
+        }
+    }
+
+    sub generate-name(&name, &validator, %reported) {
+        # Detect and warn about any mismatch, and then report.
+        my @required = &name.signature.params.map(|*.named_names);
+        my @got = keys %reported;
+        if @required (-) @got -> %missing {
+            warn-name(&validator, "missing %missing.keys().join(', ')");
+        }
+        if @got (-) @required -> %unwanted {
+            warn-name(&validator, "unexpected %unwanted.keys().join(', ')");
+        }
+        name(|%( @required Z=> %reported{@required}.map({ $_ // '<MISSING>' }) ))
+    }
+
+    sub warn-name(&validator, $error --> Nil) {
+        warn "Encountered $error when generating name for validation rule at " ~
+                "&validator.file():&validator.line()"
     }
 
     #| Runs the validations, and returns a validation result.
