@@ -48,4 +48,19 @@ my subset Large is json-path('$.days[*].team') where .elems >= 4;
             'Found Long/Large combination';
 }
 
+{
+    my constant ShortOrLong = Either[Short, Long];
+    my $*JSON-HOUND-RULESET = JsonHound::RuleSet.new;
+    validate "Out of range", -> ShortOrLong $day {
+        False
+    }
+
+    my @violations = $*JSON-HOUND-RULESET.validate($sample-document).violations;
+    is @violations.elems, 2, 'Got expected number of violations when using constant';
+    is @violations.grep(?*.arguments<Short>).elems, 1,
+            'Once matched Short when using constant';
+    is @violations.grep(?*.arguments<Long>).elems, 1,
+            'Once matched Long when using constant';
+}
+
 done-testing;
