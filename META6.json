@@ -20,6 +20,7 @@
         "JsonHound::Reporter::Syslog": "lib/JsonHound/Reporter/Syslog.pm6",
         "JsonHound::Reporter::CLI": "lib/JsonHound/Reporter/CLI.pm6",
         "JsonHound::Reporter::Nagios": "lib/JsonHound/Reporter/Nagios.pm6",
+        "Either": "lib/Either.pm6",
         "JsonHound": "lib/JsonHound.pm6"
     },
     "name": "JSONHound",

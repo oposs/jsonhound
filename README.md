@@ -128,6 +128,40 @@ It is allowed to have multiple such parameters, which may be provided with a sin
 call to `report` or multiple calls to `report` over time. Do as is most comfortable
 for the rule being implemented.
 
+## Disjunctions of identifiers
+
+It's possible to use the `Either[...]` construct to produce a disjunction of two
+or more identifiers. For example, given:
+
+```
+subset MegabitEthernet
+        is json-path(q[$['Cisco-IOS-XE-native:native'].interface.MegabitEthernet[*]]);
+subset GigabitEthernet
+        is json-path(q[$['Cisco-IOS-XE-native:native'].interface.GigabitEthernet[*]]);
+```
+
+One could write a validation rule that applies to either by doing:
+
+```
+validate 'Ethernet correctly configured', -> Either[MegabitEthernet, GigabitEthernet] $eth {
+    ...
+}
+```
+
+If the same `Either` expression would be repeated multiple times, it may be factored
+out by declaring a `constant`:
+
+```
+my constant Ethernet = Either[MegabitEthernet, GigabitEthernet];
+
+validate 'Ethernet correctly configured', -> Ethernet $eth {
+    ...
+}
+```
+
+A validation rule using multiple `Either` types will be invoked for all
+permutations of matches, as is usually the case with multi-parameter rules.
+
 ## The command line interface
 
 Once installed, run with:
