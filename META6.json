@@ -1,5 +1,6 @@
 {
     "license": "MIT",
+    "source-url": "git://github.com/oposs/jsonhound.git",
     "auth": "Oetiker+Partner",
     "depends": [
         "JSON::Fast",
