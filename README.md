@@ -170,6 +170,11 @@ Once installed, run with:
 jsonhound RuleFile.pm6 file1.json file2.json
 ```
 
+It's possible to read the json data from `STDIN` directly using `-`
+```
+cat t/03-wrong-reauth.json | jsonhound examples/GigabitEthernetChecks.pm6 -
+```
+
 To run it within the repository (e.g. for development), do:
 
 ```
