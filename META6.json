@@ -27,7 +27,11 @@
     "name": "JSONHound",
     "description": "Identifies anomalies in JSON data structures",
     "perl": "6.*",
+    "tags": [
+        "Icinga",
+        "Nagios"
+    ],
     "test-depends": [],
     "build-depends": [],
-    "version": "0.0.1"
+    "version": "0.0.2"
 }

@@ -101,7 +101,7 @@ class JsonHound::RuleSet {
         else {
             my $name = quietly generate-name(&name, &validator, {});
             die "Validation rule '$name' parameter '$param.name()' must " ~
-                    "have an identifier type specified as a Perl 6 subset type";
+                    "have an identifier type specified as a Raku subset type";
         }
     }
 

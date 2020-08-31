@@ -14,17 +14,17 @@ The configuration of the jsonHound works in 3 stages:
 * Stage 1 identifies the "interesting structures"
 * Stage 2 applies a set of checks to these structures
 
-jsonHound is implemented in in Perl 6, and Perl 6 is also used to write the jsonHound rule files.
+jsonHound is implemented in in Raku programming language, and Raku is also used to write the jsonHound rule files.
 
 ## The jsonHound rule files
 
-A jsonHound rule file is just a Perl 6 module that does `use JsonHound` at the top, and contains
-identification and validation setup. It's fine to use Perl 6 language features to help factor out
+A jsonHound rule file is just a Raku module that does `use JsonHound` at the top, and contains
+identification and validation setup. It's fine to use Raku language features to help factor out
 re-use within the ruleset, and even to spread the rules over multiple modules, and `use` those.
 
 ## Identification
 
-The identification state is set up by declaring Perl 6 `subset` types, which pick out "subsets"
+The identification state is set up by declaring Raku `subset` types, which pick out "subsets"
 of the JSON document to check. The simplest way to identify part of the document that should be
 considered is by using JSONPath:
 
@@ -170,10 +170,15 @@ Once installed, run with:
 jsonhound RuleFile.pm6 file1.json file2.json
 ```
 
+It's possible to read the json data from `STDIN` directly using `-`
+```
+cat t/03-wrong-reauth.json | jsonhound examples/GigabitEthernetChecks.pm6 -
+```
+
 To run it within the repository (e.g. for development), do:
 
 ```
-perl6 -Ilib bin/jsonhound RuleFile.pm file1.json file2.json
+raku -Ilib bin/jsonhound RuleFile.pm file1.json file2.json
 ```
 
 If more than one JSON input file is specified, then they will be parsed and validated
@@ -194,13 +199,13 @@ It is allowed to combine these by listing them comma-separated. However, note th
 the exit code**. Thus this:
 
 ```
-perl6 -Ilib bin/jsonhound --reporter=nagios,cli,syslog RuleFile.pm file1.json
+raku -Ilib bin/jsonhound --reporter=nagios,cli,syslog RuleFile.pm file1.json
 ```
 
 Is probably correct (the `nagios` reporter controls the exit code), while:
 
 ```
-perl6 -Ilib bin/jsonhound --reporter=cli,nagios,syslog RuleFile.pm file1.json
+raku -Ilib bin/jsonhound --reporter=cli,nagios,syslog RuleFile.pm file1.json
 ```
 
 Is probably not what's wanted (however, in this case one would probably also get
@@ -228,7 +233,7 @@ failed validation rules) or `--debug=all` (report all debug output).
 ## Running with Docker
 
 You can also run the tool with docker directly from the git checkout
-without installing perl6 locally.
+without installing raku locally.
 
 
 ```
