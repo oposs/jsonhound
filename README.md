@@ -9,12 +9,12 @@ checks are chosen by looking at features of the interface or the configuration a
 if an interface is part of VLAN 643 we *know* that this is part of your IP Telefony VLAN and will thus
 require a particular set of configuration options to be active.
 
-The configuration of the jsonHound works in 3 stages:
+The configuration of the jsonHound works in two stages:
 
 * Stage 1 identifies the "interesting structures"
 * Stage 2 applies a set of checks to these structures
 
-jsonHound is implemented in in Raku programming language, and Raku is also used to write the jsonHound rule files.
+jsonHound is implemented in the Raku programming language, and Raku is also used to write the jsonHound rule files.
 
 ## The jsonHound rule files
 
